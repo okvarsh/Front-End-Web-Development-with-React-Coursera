@@ -9,6 +9,7 @@ import Header from './HeaderComp';
 import Footer from './FooterComp';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
+import { addComment } from '../redux/ActionCreators';
 //to connect main comp - which had state earlier, should now take state from redux store
 //also see return part
 const mapStateToProps = state => {
@@ -20,6 +21,11 @@ const mapStateToProps = state => {
   }
 }
 // above func will map redux store state to props, "state" is returned from reducer.js
+
+const mapDispatchToProps = dispatch => ({ 
+  addComment: (dishId, rating, author, comment) => dispatch(addComment(dishId, rating, author, comment))
+});
+//above func will return action object for adding comment
 class Main extends Component {
 
   constructor(props) {
@@ -51,11 +57,13 @@ class Main extends Component {
             />
         );
       }
-
+      
       const DishWithId = ({match}) => {
         return(
             <DishDetail dish={this.props.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]} 
-              comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))} />
+              comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))} 
+              addComment={this.props.addComment}
+            />
         );
       };
 
@@ -79,4 +87,4 @@ class Main extends Component {
   }
 }
 //connect this main component to redux store by putting Main in connect
-export default withRouter(connect(mapStateToProps)(Main));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
